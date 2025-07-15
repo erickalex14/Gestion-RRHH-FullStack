@@ -26,14 +26,17 @@ COPY composer.json composer.lock ./
 # Instalar dependencias de PHP
 RUN composer install --no-scripts --no-autoloader
 
-# Copiar el resto del código
+# Copiar el resto del código (sin .env)
 COPY . .
+
+# NO crear archivo .env - usar solo variables de entorno
+# RUN cp .env.example .env
 
 # Generar autoloader
 RUN composer dump-autoload --optimize
 
-# Copiar .env si no existe
-RUN cp .env.example .env 2>/dev/null || true
+# Crear archivo .env vacío para que Laravel no falle, pero las variables de entorno tendrán prioridad
+RUN touch .env
 
 # Generar clave si no existe
 RUN php artisan key:generate 2>/dev/null || true

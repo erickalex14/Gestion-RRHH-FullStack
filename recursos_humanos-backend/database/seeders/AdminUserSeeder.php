@@ -10,6 +10,8 @@ use App\Models\EmployeeDetail;
 use App\Models\Role;
 use App\Models\Department;
 use App\Models\Schedule;
+use App\Models\Company;
+use App\Models\Branch;
 
 class AdminUserSeeder extends Seeder
 {
@@ -37,11 +39,40 @@ class AdminUserSeeder extends Seeder
             ]
         );
 
+        // Crear una empresa por defecto
+        $company = Company::firstOrCreate(
+            ['ruc' => '1234567890001'],
+            [
+                'name' => 'Empresa Demo',
+                'address' => 'Dirección Principal',
+                'phone' => '1234567890',
+                'email' => 'empresa@demo.com',
+                'created_by' => null
+            ]
+        );
+
+        // Crear una sucursal por defecto
+        $branch = Branch::firstOrCreate(
+            ['code' => 'MATRIZ'],
+            [
+                'company_id' => $company->company_id,
+                'name' => 'Sucursal Matriz',
+                'address' => 'Dirección Principal',
+                'city' => 'Ciudad Principal',
+                'state' => 'Estado Principal',
+                'country' => 'Ecuador',
+                'phone' => '1234567890',
+                'email' => 'matriz@demo.com',
+                'matrix' => true,
+                'created_by' => null
+            ]
+        );
+
         // Crear un departamento por defecto
         $department = Department::firstOrCreate(
             ['name' => 'Administración'],
             [
-                'description' => 'Departamento de administración general',
+                'branch_id' => $branch->branch_id,
                 'created_by' => null
             ]
         );        // Crear un horario por defecto
@@ -70,6 +101,12 @@ class AdminUserSeeder extends Seeder
         );        // Actualizar la referencia circular después de crear el usuario
         $adminRole->created_by = $admin->user_id;
         $adminRole->save();
+        
+        $company->created_by = $admin->user_id;
+        $company->save();
+        
+        $branch->created_by = $admin->user_id;
+        $branch->save();
         
         $department->created_by = $admin->user_id;
         $department->save();

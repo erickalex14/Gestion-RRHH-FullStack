@@ -5,6 +5,9 @@ vendor
 .gitignore
 README.md
 .env
+.env.local
+.env.production
+.env.staging
 .nyc_output
 coverage
 .docker
